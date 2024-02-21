@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+
+    <style>
+      /* Agrega un estilo para la imagen flotante */
+      .floating-image {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+      }
+    </style>
+
+    <title>Tu Página</title>
+
+    <script src="https://cdn.rawgit.com/Keyang/node-csvtojson/d41f44aa/browser/csvtojson.min.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="#">
+        <img
+          src="https://res.cloudinary.com/glide/image/fetch/f_auto,h_75,c_limit/https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Fglide-prod.appspot.com%2Fo%2Ficon-images%252Fanonymous-12a12a14-4c35-4c10-bbe5-c61fdb9f7fce.png%3Falt%3Dmedia%26token%3D8148c955-6ac9-4b72-a277-5c7559d393cc"
+          width="30"
+          height="30"
+          class="d-inline-block align-top"
+          alt="Logo"
+        />
+        Empresa
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#"
+              >Inicio <span class="sr-only">(current)</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Acerca de</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Servicios</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contacto</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <header
+      class="jumbotron"
+      style="
+        background-image: url('https://res.cloudinary.com/glide/image/fetch/f_auto,w_1650,c_limit/https%3A%2F%2Fstorage.googleapis.com%2Fglide-prod.appspot.com%2Fuploads-v2%2Fh91odKuuMNhZNBKWFAae%2Fpub%2FfZOLlBQQUzIgfOyUxf2R.jpeg');
+        background-size: cover;
+        background-position: center;
+        height: 325px;
+      "
+    >
+      <!-- <h1 class="display-4">Tu Encabezado</h1>
+      <p class="lead">Una breve descripción de tu página.</p>
+      <a class="btn btn-primary btn-lg" href="#" role="button">Leer más</a> -->
+    </header>
+
+    <!-- Agrega la imagen flotante con la clase "floating-image" -->
+    <!-- <div class="floating-image">
+      <img
+        src="https://res.cloudinary.com/glide/image/fetch/f_auto,w_500,c_limit/https%3A%2F%2Fstorage.googleapis.com%2Fglide-prod.appspot.com%2Fuploads-v2%2Fh91odKuuMNhZNBKWFAae%2Fpub%2FB9sjtCBjJasK2afx5Vfl.png"
+        alt="Imagen flotante"
+        style="max-width: 100%; height: 7em"
+      />
+    </div> -->
+
+    <div class="container" id="productos">
+      <div class="row" id="listsections"></div>
+    </div>
+
+    <script>
+      const url =
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWQSPT2E8sSH8fEGz0Tto3dsP13-7cUqgF3H2GgQufwB1FTvFWYHwbLYR3By2nHcNlmPBwEMESO8L6/pub?output=csv";
+
+      // Cambia la siguiente línea para seleccionar el div con id "productos"
+      const productosDiv = document.getElementById("listsections");
+
+      fetch(url)
+        .then((result) => result.text())
+        .then(function (csvtext) {
+          return csv().fromString(csvtext);
+        })
+        .then(function (csv) {
+          csv.forEach(function (row) {
+            // Usamos plantillas (`) para hacer el código más limpio
+            productosDiv.innerHTML += `
+              <div class="col-md-3 col-6">
+                <a href="${row.url}" class="card-link">
+                  <div class="card mb-4">
+                    <img src="${row.img}" class="card-img-top" alt="Imagen Sección" />
+                    <div class="card-body">
+                      <h5 class="card-title">${row.nombre}</h5>
+                      <h5 class="card-title">${row.categoria}</h5>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            `;
+          });
+        });
+    </script>
+
+    <footer class="text-center mt-5">
+      <p>&copy; 2024 Tu Página. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
