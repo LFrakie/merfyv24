@@ -12,6 +12,11 @@
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
 
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+      rel="stylesheet"
+    />
+
     <style>
       /* Agrega un estilo para la imagen flotante */
       .floating-image {
@@ -23,7 +28,7 @@
       }
     </style>
 
-    <title>Tu Página</title>
+    <title>Tu Carta</title>
 
     <script src="https://cdn.rawgit.com/Keyang/node-csvtojson/d41f44aa/browser/csvtojson.min.js"></script>
   </head>
@@ -34,11 +39,25 @@
           src="https://res.cloudinary.com/glide/image/fetch/f_auto,h_75,c_limit/https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Fglide-prod.appspot.com%2Fo%2Ficon-images%252Fanonymous-12a12a14-4c35-4c10-bbe5-c61fdb9f7fce.png%3Falt%3Dmedia%26token%3D8148c955-6ac9-4b72-a277-5c7559d393cc"
           width="30"
           height="30"
-          class="d-inline-block align-top"
+          class="d-inline-block align-top mr-2"
           alt="Logo"
         />
-        Empresa
+        Tu Carta
       </a>
+      <button
+        type="button"
+        onclick="listcategories(event)"
+        class="btn btn-outline-secondary"
+      >
+        inicio
+      </button>
+      <!-- <button
+        type="button"
+        onclick="listProds(event)"
+        class="btn btn-outline-secondary"
+      >
+        prods
+      </button> -->
       <button
         class="navbar-toggler"
         type="button"
@@ -58,17 +77,28 @@
             >
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Acerca de</a>
+            <a class="nav-link" href="#">Helados</a>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="#">Servicios</a>
-          </li>
+          </li> -->
           <li class="nav-item">
-            <a class="nav-link" href="#">Contacto</a>
+            <a class="nav-link" href="#">Hamburguesas</a>
           </li>
         </ul>
       </div>
     </nav>
+
+    <!-- <nav class="navbar fixed-bottom bg-light">
+      <button class="btn btn-wtzp md-button btn-outline-secondary" id="boton4">
+        <i class="fa-brands fa-whatsapp fa-bounce"></i> Chat
+      </button>
+      <button class="btn btn-gps md-button btn-outline-secondary" id="boton1">
+        <i class="fa-solid fa-location-dot"></i> GPS
+      </button>
+      <button class="btn btn-phone md-button btn-outline-secondary" id="boton2">
+        <i class="fa-solid fa-phone-volume"></i> Llamar
+    </nav> -->
 
     <header
       class="jumbotron"
@@ -76,7 +106,9 @@
         background-image: url('https://res.cloudinary.com/glide/image/fetch/f_auto,w_1650,c_limit/https%3A%2F%2Fstorage.googleapis.com%2Fglide-prod.appspot.com%2Fuploads-v2%2Fh91odKuuMNhZNBKWFAae%2Fpub%2FfZOLlBQQUzIgfOyUxf2R.jpeg');
         background-size: cover;
         background-position: center;
-        height: 325px;
+        /* background-attachment: fixed; */
+
+        height: 220px;
       "
     >
       <!-- <h1 class="display-4">Tu Encabezado</h1>
@@ -93,33 +125,122 @@
       />
     </div> -->
 
+    <section id="conection-btns">
+      <div
+        class="md-buttons-row mb-4"
+        style="
+          align-items: center;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+        "
+      >
+        <button
+          class="btn btn-wtzp md-button"
+          id="boton4"
+          style="
+            background-color: #1ea550;
+            color: white;
+            margin: 0.4em;
+            min-width: 100px;
+            overflow: hidden;
+            text-align: center;
+          "
+        >
+          <i class="fa-brands fa-whatsapp fa-bounce"></i> Chat
+        </button>
+        <button
+          class="btn btn-gps md-button"
+          id="boton1"
+          style="
+            background-color: #cd5135;
+            color: white;
+            margin: 0.4em;
+            min-width: 100px;
+            overflow: hidden;
+            text-align: center;
+          "
+        >
+          <i class="fa-solid fa-location-dot"></i> GPS
+        </button>
+        <button
+          class="btn btn-phone md-button"
+          id="boton2"
+          style="
+            background-color: #54a10d;
+            color: white;
+            margin: 0.4em;
+            min-width: 100px;
+            overflow: hidden;
+            text-align: center;
+          "
+        >
+          <i class="fa-solid fa-phone-volume"></i> Llamar
+        </button>
+        <button
+          class="btn btn-web md-button"
+          id="boton3"
+          style="
+            background-color: #1d53b5;
+            color: white;
+            margin: 0.4em;
+            min-width: 100px;
+            overflow: hidden;
+            text-align: center;
+          "
+        >
+          <i class="fa-solid fa-earth-americas"></i> Web
+        </button>
+      </div>
+    </section>
+
     <div class="container" id="productos">
-      <div class="row" id="listsections"></div>
+      <div class="row" id="listcategories"></div>
     </div>
 
     <script>
-      const url =
-        "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWQSPT2E8sSH8fEGz0Tto3dsP13-7cUqgF3H2GgQufwB1FTvFWYHwbLYR3By2nHcNlmPBwEMESO8L6/pub?output=csv";
+      // Función para obtener los datos de CSV desde el almacenamiento local o la red
+      async function getCachedDataOrFetch(url, cacheKey) {
+        let cachedData = localStorage.getItem(cacheKey);
+        if (cachedData) {
+          return JSON.parse(cachedData);
+        } else {
+          const response = await fetch(url);
+          const csvText = await response.text();
+          const jsonData = await csv().fromString(csvText);
+          localStorage.setItem(cacheKey, JSON.stringify(jsonData));
+          return jsonData;
+        }
+      }
 
-      // Cambia la siguiente línea para seleccionar el div con id "productos"
-      const productosDiv = document.getElementById("listsections");
+      // Función para cachear ambos archivos CSV al cargar la página
+      async function cacheCSVData() {
+        const urlcategs =
+          "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWQSPT2E8sSH8fEGz0Tto3dsP13-7cUqgF3H2GgQufwB1FTvFWYHwbLYR3By2nHcNlmPBwEMESO8L6/pub?output=csv";
+        const urlprods =
+          "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWQSPT2E8sSH8fEGz0Tto3dsP13-7cUqgF3H2GgQufwB1FTvFWYHwbLYR3By2nHcNlmPBwEMESO8L6/pub?gid=1401129563&single=true&output=csv";
+        const cacheKeyCategories = "categories";
+        const cacheKeyProducts = "products";
 
-      fetch(url)
-        .then((result) => result.text())
-        .then(function (csvtext) {
-          return csv().fromString(csvtext);
-        })
-        .then(function (csv) {
+        await getCachedDataOrFetch(urlcategs, cacheKeyCategories);
+        await getCachedDataOrFetch(urlprods, cacheKeyProducts);
+      }
+
+      // Función para listar las categorías
+      function listcategories() {
+        const cacheKey = "categories";
+        const productosDiv = document.getElementById("listcategories");
+        productosDiv.innerHTML = "";
+
+        getCachedDataOrFetch(null, cacheKey).then(function (csv) {
           csv.forEach(function (row) {
-            // Usamos plantillas (`) para hacer el código más limpio
             productosDiv.innerHTML += `
               <div class="col-md-3 col-6">
-                <a href="${row.url}" class="card-link">
+                <a href="" onclick="listProds(event, '${row.nombre}')" class="card-link">
                   <div class="card mb-4">
                     <img src="${row.img}" class="card-img-top" alt="Imagen Sección" />
                     <div class="card-body">
-                      <h5 class="card-title">${row.nombre}</h5>
-                      <h5 class="card-title">${row.categoria}</h5>
+                      <h5 class="card-title" style="text-align: center">${row.nombre}</h5>
                     </div>
                   </div>
                 </a>
@@ -127,10 +248,49 @@
             `;
           });
         });
+      }
+
+      // Función para listar los productos de una categoría
+      function listProds(event, segarg) {
+        event.preventDefault();
+        const cacheKey = "products";
+        const productosDiv = document.getElementById("listcategories");
+        productosDiv.innerHTML = "";
+
+        getCachedDataOrFetch(null, cacheKey).then(function (csv) {
+          csv.forEach(function (row) {
+            if (row.categoria === segarg) {
+              productosDiv.innerHTML += `
+                <div class="col-md-3 col-6">
+                  <a href="${row.url}" class="card-link">
+                    <div class="card mb-4">
+                      <img src="${row.img}" class="card-img-top" alt="Imagen Sección" />
+                      <div class="card-body">
+                        <h5 class="card-title" style="text-align: center">${row.nombre}</h5>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              `;
+            }
+          });
+        });
+      }
+
+      // Llama a la función para cachear los datos CSV al cargar la página
+      cacheCSVData().then(listcategories);
+
+      // Efecto parallax al desplazarse
+      window.addEventListener("scroll", function () {
+        const offset = window.scrollY;
+        document.querySelector("header").style.backgroundPositionY = `${
+          offset * 0.5
+        }px`;
+      });
     </script>
 
     <footer class="text-center mt-5">
-      <p>&copy; 2024 Tu Página. Todos los derechos reservados.</p>
+      <p>&copy; 2024 Tu Carta</p>
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
