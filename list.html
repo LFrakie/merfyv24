@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* Agrega un estilo para la imagen flotante */
+      .floating-image {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+      }
+    </style>
+
+    <title>Tu Carta</title>
+
+    <script src="https://cdn.rawgit.com/Keyang/node-csvtojson/d41f44aa/browser/csvtojson.min.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="#">
+        <img
+          src="https://res.cloudinary.com/glide/image/fetch/f_auto,h_75,c_limit/https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Fglide-prod.appspot.com%2Fo%2Ficon-images%252Fanonymous-12a12a14-4c35-4c10-bbe5-c61fdb9f7fce.png%3Falt%3Dmedia%26token%3D8148c955-6ac9-4b72-a277-5c7559d393cc"
+          width="30"
+          height="30"
+          class="d-inline-block align-top mr-2"
+          alt="Logo"
+        />
+        Tu Carta
+      </a>
+      <button
+        type="button"
+        onclick="window.location.href='/'"
+        class="btn btn-outline-secondary"
+      >
+        inicio
+      </button>
+      <button
+        type="button"
+        onclick="updateCachedCSVData(event)"
+        class="btn btn-outline-secondary"
+      >
+        Actualizar
+      </button>
+
+      <!-- <button
+        type="button"
+        onclick="listProds(event)"
+        class="btn btn-outline-secondary"
+      >
+        prods
+      </button> -->
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="."
+              >Inicio <span class="sr-only">(current)</span></a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="helados.html">Helados</a>
+          </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" href="#">Servicios</a>
+          </li> -->
+          <li class="nav-item">
+            <a class="nav-link" href="#">Hamburguesas</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="pt-4" id="headspace"></div>
+
+    <div class="container mt-5" id="productos">
+      <div class="row" id="listcategories"></div>
+    </div>
+
+    <script>
+      // Función para obtener los datos de CSV desde el almacenamiento local o la red
+      async function getCachedDataOrFetch(url, cacheKey) {
+        let cachedData = localStorage.getItem(cacheKey);
+        if (cachedData) {
+          return JSON.parse(cachedData);
+        } else {
+          const response = await fetch(url);
+          const csvText = await response.text();
+          const jsonData = await csv().fromString(csvText);
+          localStorage.setItem(cacheKey, JSON.stringify(jsonData));
+          return jsonData;
+        }
+      }
+
+      // Función para cachear ambos archivos CSV al cargar la página
+      async function cacheCSVData() {
+        const urlcategs =
+          "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWQSPT2E8sSH8fEGz0Tto3dsP13-7cUqgF3H2GgQufwB1FTvFWYHwbLYR3By2nHcNlmPBwEMESO8L6/pub?output=csv";
+        const urlprods =
+          "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWQSPT2E8sSH8fEGz0Tto3dsP13-7cUqgF3H2GgQufwB1FTvFWYHwbLYR3By2nHcNlmPBwEMESO8L6/pub?gid=1401129563&single=true&output=csv";
+        const cacheKeyCategories = "categories";
+        const cacheKeyProducts = "products";
+
+        await getCachedDataOrFetch(urlcategs, cacheKeyCategories);
+        await getCachedDataOrFetch(urlprods, cacheKeyProducts);
+      }
+
+      async function updateCachedCSVData() {
+        const urlcategs =
+          "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWQSPT2E8sSH8fEGz0Tto3dsP13-7cUqgF3H2GgQufwB1FTvFWYHwbLYR3By2nHcNlmPBwEMESO8L6/pub?output=csv";
+        const urlprods =
+          "https://docs.google.com/spreadsheets/d/e/2PACX-1vQWQSPT2E8sSH8fEGz0Tto3dsP13-7cUqgF3H2GgQufwB1FTvFWYHwbLYR3By2nHcNlmPBwEMESO8L6/pub?gid=1401129563&single=true&output=csv";
+        const cacheKeyCategories = "categories";
+        const cacheKeyProducts = "products";
+
+        const [categoriesData, productsData] = await Promise.all([
+          fetch(urlcategs)
+            .then((response) => response.text())
+            .then((csvText) => csv().fromString(csvText)),
+          fetch(urlprods)
+            .then((response) => response.text())
+            .then((csvText) => csv().fromString(csvText)),
+        ]);
+
+        localStorage.setItem(
+          cacheKeyCategories,
+          JSON.stringify(categoriesData)
+        );
+        localStorage.setItem(cacheKeyProducts, JSON.stringify(productsData));
+        listcategories();
+      }
+
+      function listarParam() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const nombre = urlParams.get("nombre");
+
+        // alert(`¡Hola, ${nombre}! Bienvenido a la página de salud.`);
+        listProds(event, nombre);
+      }
+
+      listarParam();
+
+      function goBack() {
+        window.history.back();
+      }
+
+      // Función para listar los productos de una categoría
+      function listProds(event, segarg) {
+        // event.preventDefault();
+        const cacheKey = "products";
+        const productosDiv = document.getElementById("listcategories");
+        productosDiv.innerHTML = "";
+
+        getCachedDataOrFetch(null, cacheKey).then(function (csv) {
+          csv.forEach(function (row) {
+            if (row.categoria === segarg) {
+              productosDiv.innerHTML += `
+                <div class="col-md-3 col-6">
+                  <a href="${row.url}" class="card-link">
+                    <div class="card mb-4">
+                      <img src="${row.img}" class="card-img-top" alt="Imagen Sección" style="width: 100%; height: 200px; object-fit: cover;"/>
+                      <div class="card-body">
+                        <h5 class="card-title" style="text-align: center">${row.nombre}</h5>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              `;
+            }
+          });
+        });
+      }
+
+      // Llama a la función para cachear los datos CSV al cargar la página
+      cacheCSVData().then(listcategories);
+
+      // Efecto parallax al desplazarse
+      window.addEventListener("scroll", function () {
+        const offset = window.scrollY;
+        document.querySelector("header").style.backgroundPositionY = `${
+          offset * 0.5
+        }px`;
+      });
+    </script>
+
+    <footer class="text-center mt-5">
+      <p>&copy; 2024 Tu Carta</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>
